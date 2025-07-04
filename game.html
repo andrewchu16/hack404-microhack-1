@@ -1,0 +1,62 @@
+<head>
+    <title>Gurt Clicker</title>
+    <style>
+        #gurtImage {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            transition: transform 0.1s;
+        }
+        #gurtImage:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+        #gurtImage:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <h1>Gurt Clicker</h1>
+    <p>Click Gurt to earn points!</p>
+    <img id="gurtImage" src="gurt.png" alt="Gurt" height="200">
+    <p>You have <span id="gurtCount">0</span> Gurt points.</p>
+
+    <script>
+        let gurtCount = 0;
+
+        // Load current count from server
+        async function loadCount() {
+            try {
+                const response = await fetch('http://localhost:8000/clicks');
+                const data = await response.json();
+                gurtCount = data.clicks;
+                document.getElementById('gurtCount').textContent = gurtCount;
+            } catch (error) {
+                console.log('Server not connected');
+            }
+        }
+
+        // Send click to server and update count
+        async function clickGurt() {
+            try {
+                const response = await fetch('http://localhost:8000/click', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                gurtCount = data.clicks;
+                document.getElementById('gurtCount').textContent = gurtCount;
+            } catch (error) {
+                // Fallback to local counting if server is down
+                gurtCount++;
+                document.getElementById('gurtCount').textContent = gurtCount;
+                console.log('Server not connected, counting locally');
+            }
+        }
+
+        document.getElementById('gurtImage').addEventListener('click', clickGurt);
+        
+        // Load count when page loads
+        loadCount();
+    </script>
+</body>
