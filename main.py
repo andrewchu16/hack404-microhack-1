@@ -25,3 +25,5 @@ def click():
 def get_clicks():
     return jsonify({"clicks": clicks})
 
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)
